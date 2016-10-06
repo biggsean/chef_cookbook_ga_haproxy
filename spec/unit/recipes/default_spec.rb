@@ -20,5 +20,9 @@ describe 'ga_haproxy_default::default' do
     it 'creates haproxy service' do
       expect(chef_run).to create_ga_haproxy('default')
     end
+
+    it 'creates test haproxy service' do
+      expect(chef_run).to create_ga_haproxy('test')
+    end
   end
 end
