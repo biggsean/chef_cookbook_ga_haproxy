@@ -17,5 +17,5 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[ga_haproxy::default]
+      - recipe[ga_haproxy_default::default]
     attributes:
