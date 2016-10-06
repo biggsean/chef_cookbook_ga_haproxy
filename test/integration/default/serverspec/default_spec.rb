@@ -42,4 +42,3 @@ end
     it { should be_listening.with('tcp') }
   end
 end
-
