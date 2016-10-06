@@ -12,27 +12,29 @@ action :create do
     action :install
   end
 
-  template service_file(:instance_name) do
+  template service_file(instance_name) do
+    cookbook 'ga_haproxy'
     source 'haproxy-default-service.erb'
     owner 'root'
     group 'root'
     mode '0755'
     variables(
-      config_file(:instance_name) => cfg,
-      service_file(:instance_name) => svc
+      cfg: config_file(instance_name),
+      svc: haproxy_instance(instance_name)
     )
     action :create
   end
 
-  cookbook_file config_file(:instance_name) do
-    source :source_config_file
+  cookbook_file config_file(instance_name) do
+    cookbook 'ga_haproxy'
+    source source_config_file
     owner 'root'
     group 'root'
     mode '0755'
     action :create
   end
 
-  service haproxy_instance do
-    action :start
+  service haproxy_instance(instance_name) do
+    action [:enable, :start]
   end
 end
