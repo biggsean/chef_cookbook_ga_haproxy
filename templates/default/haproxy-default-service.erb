@@ -20,7 +20,7 @@
 [ "$NETWORKING" = "no" ] && exit 0
 
 exec="/usr/sbin/haproxy"
-prog=$(basename $exec)
+prog=<%= @svc %>
 
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
 
@@ -41,7 +41,7 @@ start() {
  
     echo -n $"Starting $prog: "
     # start it up here, usually something like "daemon $exec"
-    daemon $exec -D -f $cfgfile -p $pidfile $OPTIONS
+    daemon --pidfile=$pidfile $exec -D -f $cfgfile -p $pidfile $OPTIONS
     retval=$?
     echo
     [ $retval -eq 0 ] && touch $lockfile
