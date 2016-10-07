@@ -16,7 +16,8 @@ instance = {
     'frontends' => {
       'main' => {
         'ip' => '*',
-        'port' => '5000'
+        'port' => '5000',
+        'default_backend' => 'default-backend'
       }
     }
   },
@@ -24,7 +25,8 @@ instance = {
     'frontends' => {
       'main' => {
         'ip' => '*',
-        'port' => '6000'
+        'port' => '6000',
+        'default_backend' => 'test-backend'
       }
     }
   }
@@ -50,14 +52,15 @@ instance.keys.each do |s|
     its(:content) { should match %r{^\s*stats socket\s+/var/lib/#{Regexp.quote(s)}/stats} }
   end
 
-  instance[s]['frontends'].keys.each do |fe|
-    socket = "#{instance[s]['frontends'][fe]['ip']}:#{instance[s]['frontends'][fe]['port']}"
+  instance[s]['frontends'].each do |fe, details|
+    socket = "#{details['ip']}:#{details['port']}"
 
     describe file("/etc/haproxy/#{config}") do
       its(:content) { should match(/^\s*frontend\s+#{Regexp.quote(fe)}\s+#{Regexp.quote(socket)}$/) }
+      its(:content) { should match(/^\s*default_backend\s+#{Regexp.quote(details['default_backend'])}$/) }
     end
 
-    describe port(instance[s]['frontends'][fe]['port']) do
+    describe port(details['port']) do
       it { should be_listening.with('tcp') }
     end
   end
