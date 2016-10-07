@@ -3,8 +3,22 @@
 # Recipe:: default
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
-ga_haproxy 'default'
+default_frontends = {
+  'main' => {
+    'ip' => '*',
+    'port' => '5000'
+  }
+}
+ga_haproxy 'default' do
+  frontends default_frontends
+end
 
+test_frontends = {
+  'main' => {
+    'ip' => '*',
+    'port' => '6000'
+  }
+}
 ga_haproxy 'test' do
-  source_config_file 'haproxy.cfg'
+  frontends test_frontends
 end

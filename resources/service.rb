@@ -3,7 +3,7 @@ include GAHAProxyCookbook::Helpers
 resource_name :ga_haproxy
 
 property :instance_name, String, name_property: true
-property :source_config_file, String
+property :frontends, Hash
 
 default_action :create
 
@@ -34,13 +34,16 @@ action :create do
     action :create
   end
 
-  use_this_cb = !property_is_set?(:source_config_file)
-  cookbook_file config_file(instance_name) do
-    cookbook 'ga_haproxy' if use_this_cb
-    source 'haproxy.cfg'
+  template config_file(instance_name) do
+    cookbook 'ga_haproxy'
+    source 'haproxy.cfg.erb'
     owner 'root'
     group 'root'
     mode '0644'
+    variables(
+      fes: frontends,
+      svc: instance
+    )
     action :create
     notifies :restart, "service[#{instance}]", :delayed
   end
