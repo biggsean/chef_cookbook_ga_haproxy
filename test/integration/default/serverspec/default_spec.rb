@@ -11,7 +11,26 @@ describe file('/etc/haproxy') do
   it { should be_mode 755 }
 end
 
-['haproxy', 'haproxy-test'].each do |s|
+instance = {
+  'haproxy' => {
+    'frontends' => {
+      'main' => {
+        'ip' => '*',
+        'port' => '5000'
+      }
+    }
+  },
+  'haproxy-test' => {
+    'frontends' => {
+      'main' => {
+        'ip' => '*',
+        'port' => '6000'
+      }
+    }
+  }
+}
+
+instance.keys.each do |s|
   config = "#{s}.cfg"
 
   describe file("/var/lib/#{s}") do
@@ -26,6 +45,21 @@ end
     it { should be_owned_by 'root' }
     it { should be_grouped_into 'root' }
     it { should be_mode 644 }
+    its(:content) { should match %r{^\s*chroot\s+/var/lib/#{Regexp.quote(s)}} }
+    its(:content) { should match %r{^\s*pidfile\s+/var/run/#{Regexp.quote(s)}.pid} }
+    its(:content) { should match %r{^\s*stats socket\s+/var/lib/#{Regexp.quote(s)}/stats} }
+  end
+
+  instance[s]['frontends'].keys.each do |fe|
+    socket = "#{instance[s]['frontends'][fe]['ip']}:#{instance[s]['frontends'][fe]['port']}"
+
+    describe file("/etc/haproxy/#{config}") do
+      its(:content) { should match(/^\s*frontend\s+#{Regexp.quote(fe)}\s+#{Regexp.quote(socket)}$/) }
+    end
+
+    describe port(instance[s]['frontends'][fe]['port']) do
+      it { should be_listening.with('tcp') }
+    end
   end
 
   describe file("/etc/init.d/#{s}") do
@@ -43,11 +77,5 @@ end
   describe service(s) do
     it { should be_enabled }
     it { should be_running }
-  end
-end
-
-[5000, 6001].each do |p|
-  describe port(p) do
-    it { should be_listening.with('tcp') }
   end
 end
