@@ -9,33 +9,34 @@ property :backends, Hash
 default_action :create
 
 action :create do
-  instance = haproxy_instance(instance_name)
+  i = get_config(instance_name)
 
   package package_name do
     action :install
   end
 
-  directory "/var/lib/#{instance}" do
+  directory i[:chroot] do
     owner 'haproxy'
     group 'haproxy'
     mode '0755'
     action :create
   end
 
-  template service_file(instance_name) do
+  template i[:init] do
     cookbook 'ga_haproxy'
     source 'haproxy-default-service.erb'
     owner 'root'
     group 'root'
     mode '0755'
     variables(
-      cfg: config_file(instance_name),
-      svc: instance
+      cfg: i[:cfg],
+      svc: i[:svc],
+      pidfile: i[:pidfile]
     )
     action :create
   end
 
-  template config_file(instance_name) do
+  template i[:cfg] do
     cookbook 'ga_haproxy'
     source 'haproxy.cfg.erb'
     owner 'root'
@@ -44,13 +45,15 @@ action :create do
     variables(
       fes: frontends,
       bes: backends,
-      svc: instance
+      svc: i[:svc],
+      pidfile: i[:pidfile],
+      chroot: i[:chroot]
     )
     action :create
-    notifies :restart, "service[#{instance}]", :delayed
+    notifies :restart, "service[#{i[:svc]}]", :delayed
   end
 
-  service instance do
+  service i[:svc] do
     action [:enable, :start]
   end
 end

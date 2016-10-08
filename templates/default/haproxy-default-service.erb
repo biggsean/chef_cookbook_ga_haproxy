@@ -8,7 +8,7 @@
 #               proxying for TCP and  HTTP-based applications
 # processname: haproxy
 # config:      <%= @cfg %>
-# pidfile:     /var/run/<%= @svc %>.pid
+# pidfile:     <%= @pidfile %>
 
 # Source function library.
 . /etc/rc.d/init.d/functions
@@ -25,7 +25,7 @@ prog=<%= @svc %>
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
 
 cfgfile=<%= @cfg %>
-pidfile=/var/run/<%= @svc %>.pid
+pidfile=<%= @pidfile %>
 lockfile=/var/lock/subsys/<%= @svc %>
 
 check() {

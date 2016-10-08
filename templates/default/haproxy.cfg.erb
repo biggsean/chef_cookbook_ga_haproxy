@@ -1,16 +1,16 @@
 # chef-managed
 global
-log         127.0.0.1 local2
+  log         127.0.0.1 local2
 
-chroot      /var/lib/<%= @svc %>
-  pidfile     /var/run/<%= @svc %>.pid
+  chroot      <%= @chroot %>
+  pidfile     <%= @pidfile %>
   maxconn     4000
   user        haproxy
   group       haproxy
   daemon
 
   # turn on stats unix socket
-  stats socket /var/lib/<%= @svc %>/stats
+  stats socket <%= @chroot %>/stats
 
   defaults
   mode                    http

@@ -6,21 +6,22 @@ module GAHAProxyCookbook
       'haproxy'
     end
 
-    def haproxy_instance(iname)
-      case iname
+    def get_config(instance)
+      i = servicename(instance)
+      {
+        svc: i,
+        cfg: "/etc/haproxy/#{i}.cfg",
+        init: "/etc/init.d/#{i}",
+        chroot: "/var/lib/#{i}",
+        pidfile: "/var/run/#{i}.pid"
+      }
+    end
+
+    def servicename(instance)
+      case instance
       when 'default' then 'haproxy'
-      else "haproxy-#{iname}"
+      else "haproxy-#{instance}"
       end
-    end
-
-    def config_file(iname)
-      hi = haproxy_instance(iname)
-      "/etc/haproxy/#{hi}.cfg"
-    end
-
-    def service_file(iname)
-      hi = haproxy_instance(iname)
-      "/etc/init.d/#{hi}"
     end
   end
 end
