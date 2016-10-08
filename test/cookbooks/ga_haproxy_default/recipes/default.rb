@@ -5,6 +5,10 @@
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 default_backends = {
   :'default-backend' => {
+    options: [
+      'balance roundrobin',
+      'option httpchk HEAD / HTTP/1.1\r\nHost:localhost'
+    ],
     servers: [
       app1: {
         socket: '127.0.0.1:5001',

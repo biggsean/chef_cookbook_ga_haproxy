@@ -37,7 +37,12 @@ chroot      /var/lib/<%= @svc %>
 <% end %>
 <% @bes.each do |name, be| %>
 backend <%= name %>
-  balance     roundrobin
+  <% if be[:options] %>
+  <% be[:options].each do |option| %>
+  <%= option %>
+  <% end %>
+  <% end %>
+
 
   <% be[:servers].each do |server| %>
   <% server.each do |s_name, s| %>
