@@ -6,7 +6,8 @@
 default_frontends = {
   'main' => {
     'ip' => '*',
-    'port' => '5000'
+    'port' => '5000',
+    'default_backend' => 'default-backend'
   }
 }
 ga_haproxy 'default' do
@@ -16,7 +17,8 @@ end
 test_frontends = {
   'main' => {
     'ip' => '*',
-    'port' => '6000'
+    'port' => '6000',
+    'default_backend' => 'test-backend'
   }
 }
 ga_haproxy 'test' do
