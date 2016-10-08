@@ -31,7 +31,7 @@ backends = {
       }
     ]
   },
-  :'http-backend' => {
+  :'test-backend' => {
     servers: [
       app1: {
         socket: '127.0.0.1:5001',
@@ -51,7 +51,7 @@ instances = {
       http: {
         ip: '*',
         port: 80,
-        default_backend: 'http-backend'
+        default_backend: 'test-backend'
       }
     },
     backends: backends

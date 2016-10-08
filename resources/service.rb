@@ -4,6 +4,7 @@ resource_name :ga_haproxy
 
 property :instance_name, String, name_property: true
 property :frontends, Hash
+property :backends, Hash
 
 default_action :create
 
@@ -42,6 +43,7 @@ action :create do
     mode '0644'
     variables(
       fes: frontends,
+      bes: backends,
       svc: instance
     )
     action :create

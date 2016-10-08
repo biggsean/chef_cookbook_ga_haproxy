@@ -3,6 +3,36 @@
 # Recipe:: default
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
+default_backends = {
+  :'default-backend' => {
+    servers: [
+      app1: {
+        socket: '127.0.0.1:5001',
+        options: ['check']
+      },
+      app2: {
+        socket: '127.0.0.1:5002',
+        options: ['check']
+      },
+      app3: {
+        socket: '127.0.0.1:5003',
+        options: ['check']
+      },
+      app4: {
+        socket: '127.0.0.1:5004',
+        options: ['check']
+      }
+    ]
+  },
+  :'test-backend' => {
+    servers: [
+      app1: {
+        socket: '127.0.0.1:5001',
+        options: ['check']
+      }
+    ]
+  }
+}
 default_frontends = {
   main: {
     ip: '*',
@@ -12,11 +42,12 @@ default_frontends = {
   http: {
     ip: '*',
     port: '80',
-    default_backend: 'default-backend'
+    default_backend: 'test-backend'
   }
 }
 ga_haproxy 'default' do
   frontends default_frontends
+  backends default_backends
 end
 
 test_frontends = {
@@ -28,4 +59,5 @@ test_frontends = {
 }
 ga_haproxy 'test' do
   frontends test_frontends
+  backends default_backends
 end

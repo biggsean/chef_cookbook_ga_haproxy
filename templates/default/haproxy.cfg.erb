@@ -1,45 +1,47 @@
 # chef-managed
 global
-    log         127.0.0.1 local2
+log         127.0.0.1 local2
 
-    chroot      /var/lib/<%= @svc %>
+chroot      /var/lib/<%= @svc %>
   pidfile     /var/run/<%= @svc %>.pid
-    maxconn     4000
-    user        haproxy
-    group       haproxy
-    daemon
+  maxconn     4000
+  user        haproxy
+  group       haproxy
+  daemon
 
-    # turn on stats unix socket
-    stats socket /var/lib/<%= @svc %>/stats
+  # turn on stats unix socket
+  stats socket /var/lib/<%= @svc %>/stats
 
-defaults
-    mode                    http
-    log                     global
-    option                  httplog
-    option                  dontlognull
-    option http-server-close
-    option forwardfor       except 127.0.0.0/8
-    option                  redispatch
-    retries                 3
-    timeout http-request    10s
-    timeout queue           1m
-    timeout connect         10s
-    timeout client          1m
-    timeout server          1m
-    timeout http-keep-alive 10s
-    timeout check           10s
-    maxconn                 3000
+  defaults
+  mode                    http
+  log                     global
+  option                  httplog
+  option                  dontlognull
+  option http-server-close
+  option forwardfor       except 127.0.0.0/8
+  option                  redispatch
+  retries                 3
+  timeout http-request    10s
+  timeout queue           1m
+  timeout connect         10s
+  timeout client          1m
+  timeout server          1m
+  timeout http-keep-alive 10s
+  timeout check           10s
+  maxconn                 3000
 
-<% @fes.each do |name, details| %>
-frontend  <%=  "#{name}  #{details[:ip]}:#{details[:port]}" %>
-    default_backend             <%= details[:default_backend] %>
+<% @fes.each do |name, fe| %>
+  frontend  <%=  "#{name}  #{fe[:ip]}:#{fe[:port]}" %>
+  default_backend             <%= fe[:default_backend] %>
 
-backend <%= details[:default_backend] %>
 <% end %>
+<% @bes.each do |name, be| %>
+backend <%= name %>
+  balance     roundrobin
 
-    balance     roundrobin
-    server  app1 127.0.0.1:5001 check
-    server  app2 127.0.0.1:5002 check
-    server  app3 127.0.0.1:5003 check
-    server  app4 127.0.0.1:5004 check
-
+  <% be[:servers].each do |server| %>
+  <% server.each do |s_name, s| %>
+  server  <%= s_name %>  <%= s[:socket] %> <%= s[:options].join(' ') %>
+  <% end %>
+  <% end %>
+<% end %>
