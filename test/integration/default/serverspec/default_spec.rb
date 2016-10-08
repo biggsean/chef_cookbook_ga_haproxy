@@ -12,6 +12,10 @@ describe file('/etc/haproxy') do
 end
 backends = {
   :'default-backend' => {
+    options: [
+      'balance roundrobin',
+      'option httpchk HEAD / HTTP/1.1\r\nHost:localhost'
+    ],
     servers: [
       app1: {
         socket: '127.0.0.1:5001',
@@ -104,6 +108,12 @@ instances.each do |i, i_hash|
   i_hash[:backends].each do |be, be_hash|
     describe file("/etc/haproxy/#{config}") do
       its(:content) { should match(/^\s*backend\s+#{Regexp.quote(be)}$/) }
+
+      if be_hash[:options]
+        be_hash[:options].each do |option|
+          its(:content) { should match(/^\s*#{Regexp.quote(option)}$/) }
+        end
+      end
 
       be_hash[:servers].each do |server|
         server.each do |s_name, s_info|
