@@ -18,6 +18,11 @@ instances = {
         ip: '*',
         port: 5000,
         default_backend: 'default-backend'
+      },
+      http: {
+        ip: '*',
+        port: 80,
+        default_backend: 'default_backend'
       }
     }
   },
