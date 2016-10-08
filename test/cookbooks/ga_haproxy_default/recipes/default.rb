@@ -2,7 +2,7 @@
 # Cookbook Name:: ga_haproxy_default
 # Recipe:: default
 #
-# Copyright (c) 2016 The Authors, All Rights Reserved.
+# Copyright (c) 2016 Sean McGowan, All Rights Reserved.
 default_backends = {
   :'default-backend' => {
     options: [

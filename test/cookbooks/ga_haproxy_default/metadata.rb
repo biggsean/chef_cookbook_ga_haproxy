@@ -1,6 +1,6 @@
 name 'ga_haproxy_default'
-maintainer 'The Authors'
-maintainer_email 'you@example.com'
+maintainer 'Sean McGowan'
+maintainer_email 'spmcgowan@gmail.com'
 license 'all_rights'
 description 'Installs/Configures ga_haproxy_default'
 long_description 'Installs/Configures ga_haproxy_default'
