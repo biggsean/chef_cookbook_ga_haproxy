@@ -31,10 +31,10 @@ defaults
     maxconn                 3000
 
 <% @fes.each do |name, details| %>
-frontend  <%=  "#{name}  #{details['ip']}:#{details['port']}" %>
-    default_backend             <%= details['default_backend'] %>
+frontend  <%=  "#{name}  #{details[:ip]}:#{details[:port]}" %>
+    default_backend             <%= details[:default_backend] %>
 
-backend <%= details['default_backend'] %>
+backend <%= details[:default_backend] %>
 <% end %>
 
     balance     roundrobin
