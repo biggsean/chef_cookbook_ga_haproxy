@@ -7,7 +7,7 @@
 require 'spec_helper'
 
 describe 'ga_haproxy_default::default' do
-  context 'When all attributes are default, on an unspecified platform' do
+  context 'The default recipe on CentOS 6.7' do
     let(:chef_run) do
       runner = ChefSpec::ServerRunner.new(platform: 'centos', version: '6.7')
       runner.converge(described_recipe)
