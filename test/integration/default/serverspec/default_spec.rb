@@ -14,19 +14,6 @@ end
 instances.each do |i, i_hash|
   config = "#{i}.cfg"
 
-  i_hash[:frontends].each do |fe, fe_hash|
-    socket = "#{fe_hash[:ip]}:#{fe_hash[:port]}"
-
-    describe file("/etc/haproxy/#{config}") do
-      its(:content) { should match(/^\s*frontend\s+#{Regexp.quote(fe)}\s+#{Regexp.quote(socket)}$/) }
-      its(:content) { should match(/^\s*default_backend\s+#{Regexp.quote(fe_hash[:default_backend])}$/) }
-    end
-
-    describe port(fe_hash[:port]) do
-      it { should be_listening.with('tcp') }
-    end
-  end
-
   i_hash[:backends].each do |be, be_hash|
     describe file("/etc/haproxy/#{config}") do
       its(:content) { should match(/^\s*backend\s+#{Regexp.quote(be)}$/) }
