@@ -10,67 +10,6 @@ describe file('/etc/haproxy') do
   it { should be_grouped_into 'root' }
   it { should be_mode 755 }
 end
-backends = {
-  :'default-backend' => {
-    options: [
-      'balance roundrobin',
-      'option httpchk HEAD / HTTP/1.1\r\nHost:localhost'
-    ],
-    servers: [
-      app1: {
-        socket: '127.0.0.1:5001',
-        options: ['check']
-      },
-      app2: {
-        socket: '127.0.0.1:5002',
-        options: ['check']
-      },
-      app3: {
-        socket: '127.0.0.1:5003',
-        options: ['check']
-      },
-      app4: {
-        socket: '127.0.0.1:5004',
-        options: ['check']
-      }
-    ]
-  },
-  :'test-backend' => {
-    servers: [
-      app1: {
-        socket: '127.0.0.1:5001',
-        options: ['check']
-      }
-    ]
-  }
-}
-instances = {
-  haproxy: {
-    frontends: {
-      main: {
-        ip: '*',
-        port: 5000,
-        default_backend: 'default-backend'
-      },
-      http: {
-        ip: '*',
-        port: 80,
-        default_backend: 'test-backend'
-      }
-    },
-    backends: backends
-  },
-  :'haproxy-test' => {
-    frontends: {
-      main: {
-        ip: '*',
-        port: 6000,
-        default_backend: 'test-backend'
-      }
-    },
-    backends: backends
-  }
-}
 
 instances.each do |i, i_hash|
   config = "#{i}.cfg"
