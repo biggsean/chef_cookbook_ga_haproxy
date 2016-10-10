@@ -1,0 +1,13 @@
+backend <%= @name %>
+  <% if @theend[:options] %>
+  <% @theend[:options].each do |option| %>
+  <%= option %>
+  <% end %>
+  <% end %>
+
+
+  <% @theend[:servers].each do |server| %>
+  <% server.each do |s_name, s| %>
+  server  <%= s_name %>  <%= s[:socket] %> <%= s[:options].join(' ') %>
+  <% end %>
+  <% end %>

@@ -30,23 +30,3 @@ global
   timeout check           10s
   maxconn                 3000
 
-<% @fes.each do |name, fe| %>
-  frontend  <%=  "#{name}  #{fe[:ip]}:#{fe[:port]}" %>
-  default_backend             <%= fe[:default_backend] %>
-
-<% end %>
-<% @bes.each do |name, be| %>
-backend <%= name %>
-  <% if be[:options] %>
-  <% be[:options].each do |option| %>
-  <%= option %>
-  <% end %>
-  <% end %>
-
-
-  <% be[:servers].each do |server| %>
-  <% server.each do |s_name, s| %>
-  server  <%= s_name %>  <%= s[:socket] %> <%= s[:options].join(' ') %>
-  <% end %>
-  <% end %>
-<% end %>

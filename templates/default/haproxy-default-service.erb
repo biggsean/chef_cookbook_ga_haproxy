@@ -27,7 +27,7 @@ prog=<%= @svc %>
 cfgfile=<%= @cfg %>
 pidfile=<%= @pidfile %>
 lockfile=/var/lock/subsys/<%= @svc %>
-
+dotdfiles=$(/bin/find <%= @dotd %> -type f -name '*.cfg' -print0|/bin/sed 's/\([^\x0][^\x0]*\)/-f "\1" /g')
 check() {
     $exec -c -V -f $cfgfile $OPTIONS
 }
@@ -41,7 +41,7 @@ start() {
  
     echo -n $"Starting $prog: "
     # start it up here, usually something like "daemon $exec"
-    daemon --pidfile=$pidfile $exec -D -f $cfgfile -p $pidfile $OPTIONS
+    daemon --pidfile=$pidfile $exec -D -f $cfgfile -p $pidfile $dotdfiles $OPTIONS
     retval=$?
     echo
     [ $retval -eq 0 ] && touch $lockfile

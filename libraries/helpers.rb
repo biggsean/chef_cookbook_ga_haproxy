@@ -11,6 +11,7 @@ module GAHAProxyCookbook
       {
         svc: i,
         cfg: "/etc/haproxy/#{i}.cfg",
+        dotd: "/etc/haproxy/#{i}.d",
         init: "/etc/init.d/#{i}",
         chroot: "/var/lib/#{i}",
         pidfile: "/var/run/#{i}.pid"
