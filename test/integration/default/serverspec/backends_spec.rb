@@ -1,10 +1,14 @@
 require 'spec_helper'
 
 instances.each do |name, instance|
-  config = "/etc/haproxy/#{name}.cfg"
-
   instance[:backends].each do |be, backend|
+    config = "/etc/haproxy/#{name}.d/backends/#{be}.cfg"
+
     describe file(config) do
+      it { should be_file }
+      it { should be_owned_by 'root' }
+      it { should be_grouped_into 'root' }
+      it { should be_mode 644 }
       its(:content) { should match(/^\s*backend\s+#{Regexp.quote(be)}$/) }
 
       if backend[:options]
