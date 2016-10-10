@@ -1,7 +1,12 @@
 Cookbook Name ga_haproxy
 =========
 
-This is a very basic install and configuration of haproxy, supporting multiple instances of haproxy.
+This is a very basic install and configuration of haproxy, supporting multiple instances of haproxy.o
+
+It configures haproxy to load with multiple configuration files.
+* /etc/haproxy/_instance_.cfg          # Global configurations
+* /etc/haproxy/_instance_.d/frontends  # Frontend configurations
+* /etc/haproxy/_instance_.d/backends   # Backend configurations
 
 Requirements
 ------------
