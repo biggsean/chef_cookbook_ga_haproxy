@@ -13,8 +13,12 @@ instances.keys.each do |instance|
     its(:content) { should match(/^cfgfile=#{Regexp.quote(config)}/) }
     its(:content) { should match %r{^pidfile=/var/run/#{Regexp.quote(instance)}\.pid} }
     its(:content) { should match %r{^lockfile=/var/lock/subsys/#{Regexp.quote(instance)}} }
+
+    findcmd = "$/bin/find #{dotd} -type f -name '*.cfg' -print0"
+    sedcmd = %q{/bin/sed 's/\([^\x0][^\x0]*\)/-f "\1" /g'}
+    its(:content) { should match(/^#{Regexp.quote("dotdfiles=$(#{findcmd}|#{sedcmd})")}$/) }
     its(:content) { should match(/^prog=#{Regexp.quote(instance)}/) }
-    its(:content) { should match(/daemon --pidfile=\$pidfile \$exec -D -f \$cfgfile -p \$pidfile \$OPTIONS/) }
+    its(:content) { should match(/daemon --pidfile=\$pidfile \$exec -D -f \$cfgfile -p \$pidfile \$dotdfiles \$OPTIONS/) }
   end
 
   describe file("/var/lib/#{instance}") do
