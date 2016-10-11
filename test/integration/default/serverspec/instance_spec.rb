@@ -40,23 +40,23 @@ instances.each do |instance|
 
   describe file(dotd) do
     it { should be_directory }
-    it { should be_owned_by 'haproxy' }
-    it { should be_grouped_into 'haproxy' }
+    it { should be_owned_by 'root' }
+    it { should be_grouped_into 'root' }
     it { should be_mode 755 }
   end
 
   %w(frontends backends).each do |dir|
     describe file("#{dotd}/#{dir}") do
       it { should be_directory }
-      it { should be_owned_by 'haproxy' }
-      it { should be_grouped_into 'haproxy' }
+      it { should be_owned_by 'root' }
+      it { should be_grouped_into 'root' }
       it { should be_mode 755 }
     end
 
     describe file("#{dotd}/#{dir}/enabled") do
       it { should be_directory }
-      it { should be_owned_by 'haproxy' }
-      it { should be_grouped_into 'haproxy' }
+      it { should be_owned_by 'root' }
+      it { should be_grouped_into 'root' }
       it { should be_mode 755 }
     end
   end
