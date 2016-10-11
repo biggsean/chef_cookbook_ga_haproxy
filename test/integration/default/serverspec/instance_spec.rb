@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-instances.keys.each do |instance|
+instances.each do |instance|
   cfgdir = '/etc/haproxy'
   config = "#{cfgdir}/#{instance}.cfg"
   dotd = "#{cfgdir}/#{instance}.d"
@@ -14,7 +14,7 @@ instances.keys.each do |instance|
     its(:content) { should match %r{^pidfile=/var/run/#{Regexp.quote(instance)}\.pid} }
     its(:content) { should match %r{^lockfile=/var/lock/subsys/#{Regexp.quote(instance)}} }
 
-    findcmd = "/bin/find #{dotd} -type f -name '*.cfg' -print0"
+    findcmd = "/bin/find #{dotd} -type f -name '*.cfg' -path '*enabled*' -print0"
     sedcmd = %q{/bin/sed 's/\([^\x0][^\x0]*\)/-f "\1" /g'}
     its(:content) { should match(/^#{Regexp.quote("dotdfiles=$(#{findcmd}|#{sedcmd})")}$/) }
     its(:content) { should match(/^prog=#{Regexp.quote(instance)}/) }
@@ -47,6 +47,13 @@ instances.keys.each do |instance|
 
   %w(frontends backends).each do |dir|
     describe file("#{dotd}/#{dir}") do
+      it { should be_directory }
+      it { should be_owned_by 'haproxy' }
+      it { should be_grouped_into 'haproxy' }
+      it { should be_mode 755 }
+    end
+
+    describe file("#{dotd}/#{dir}/enabled") do
       it { should be_directory }
       it { should be_owned_by 'haproxy' }
       it { should be_grouped_into 'haproxy' }
