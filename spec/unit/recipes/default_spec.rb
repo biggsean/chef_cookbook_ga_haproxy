@@ -51,9 +51,10 @@ describe 'ga_haproxy_default::default' do
       )
     end
 
-    %w(main http).each do |instance|
+    %w(default test).each do |instance|
       it "enables default-backend and test-backend for #{instance}" do
         expect(chef_run).to enable_ga_haproxy_backend('default-backend').with(
+          instance_name: instance
           servers: [
             { name: 'app1', socket: '127.0.0.1:5001', options: ['check'] },
             { name: 'app2', socket: '127.0.0.1:5002', options: ['check'] },
