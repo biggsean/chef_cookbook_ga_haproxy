@@ -30,8 +30,8 @@ action :enable do
   link link do
     to config
     link_type :symbolic
-    owner root
-    group root
+    owner 'root'
+    group 'root'
     action :create
   end
 
