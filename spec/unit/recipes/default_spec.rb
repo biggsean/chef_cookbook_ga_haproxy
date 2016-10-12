@@ -73,8 +73,8 @@ describe 'ga_haproxy_default::default' do
     end
 
     it 'disables https frontend and default-backend for test instance' do
-      expect(chef_run).to disable_ga_haproxy_frontend('https')
-      expect(chef_run).to disable_ga_haproxy_backend('test-backend')
+      expect(chef_run).to disable_ga_haproxy_frontend('https').with(instance_name: test)
+      expect(chef_run).to disable_ga_haproxy_backend('test-backend').with(instance_name: test)
     end
   end
 end
