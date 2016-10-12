@@ -11,7 +11,7 @@ node['haproxy'].each do |instance_name, instance|
       instance_name instance_name
       socket frontend['socket']
       default_backend frontend['default_backend']
-      action enable
+      action :enable
     end
   end
 
@@ -20,17 +20,17 @@ node['haproxy'].each do |instance_name, instance|
       instance_name instance_name
       servers backend['servers']
       options backend['options']
-      action enable
+      action :enable
     end
   end
 end
 
 ga_haproxy_frontend 'https' do
   instance_name 'test'
-  action disable
+  action :disable
 end
 
 ga_haproxy_backend 'default-backend' do
   instance_name 'test'
-  action disable
+  action :disable
 end
