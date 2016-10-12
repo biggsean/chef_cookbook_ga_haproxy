@@ -3,65 +3,34 @@
 # Recipe:: default
 #
 # Copyright (c) 2016 Sean McGowan, All Rights Reserved.
-default_backends = {
-  :'default-backend' => {
-    options: [
-      'balance roundrobin',
-      'option httpchk HEAD / HTTP/1.1\r\nHost:localhost'
-    ],
-    servers: [
-      app1: {
-        socket: '127.0.0.1:5001',
-        options: ['check']
-      },
-      app2: {
-        socket: '127.0.0.1:5002',
-        options: ['check']
-      },
-      app3: {
-        socket: '127.0.0.1:5003',
-        options: ['check']
-      },
-      app4: {
-        socket: '127.0.0.1:5004',
-        options: ['check']
-      }
-    ]
-  },
-  :'test-backend' => {
-    servers: [
-      app1: {
-        socket: '127.0.0.1:5001',
-        options: ['check']
-      }
-    ]
-  }
-}
-default_frontends = {
-  main: {
-    ip: '*',
-    port: '5000',
-    default_backend: 'default-backend'
-  },
-  http: {
-    ip: '*',
-    port: '80',
-    default_backend: 'test-backend'
-  }
-}
-ga_haproxy 'default' do
-  frontends default_frontends
-  backends default_backends
+node['haproxy'].each do |instance_name, instance|
+  ga_haproxy instance_name
+
+  instance['frontends'].each do |fe_name, frontend|
+    ga_haproxy_frontend fe_name do
+      instance_name instance_name
+      socket frontend['socket']
+      default_backend frontend['default_backend']
+      action enable
+    end
+  end
+
+  node['haproxy-shared'].each do |be_name, backend|
+    ga_haproxy_backend be_name do
+      instance_name instance_name
+      servers backend['servers']
+      options backend['options']
+      action enable
+    end
+  end
 end
 
-test_frontends = {
-  main: {
-    ip: '*',
-    port: '6000',
-    default_backend: 'test-backend'
-  }
-}
-ga_haproxy 'test' do
-  frontends test_frontends
-  backends default_backends
+ga_haproxy_frontend 'https' do
+  instance_name 'test'
+  action disable
+end
+
+ga_haproxy_backend 'default-backend' do
+  instance_name 'test'
+  action disable
 end
