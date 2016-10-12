@@ -14,7 +14,7 @@ instances.each do |instance|
     its(:content) { should match %r{^pidfile=/var/run/#{Regexp.quote(instance)}\.pid} }
     its(:content) { should match %r{^lockfile=/var/lock/subsys/#{Regexp.quote(instance)}} }
 
-    findcmd = "/bin/find #{dotd} -type f -name '*.cfg' -path '*enabled*' -print0"
+    findcmd = "/bin/find #{dotd} -type l -name '*.cfg' -path '*enabled*' -print0"
     sedcmd = %q{/bin/sed 's/\([^\x0][^\x0]*\)/-f "\1" /g'}
     its(:content) { should match(/^#{Regexp.quote("dotdfiles=$(#{findcmd}|#{sedcmd})")}$/) }
     its(:content) { should match(/^prog=#{Regexp.quote(instance)}/) }
