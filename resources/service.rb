@@ -15,10 +15,33 @@ action :create do
     action :install
   end
 
-  [i[:chroot], i[:dotd], "#{i[:dotd]}/frontends", "#{i[:dotd]}/backends"].each do |dir|
+  directory i[:chroot] do
+    owner 'haproxy'
+    group 'haproxy'
+    mode '0755'
+    action :create
+  end
+
+  directory i[:dotd] do
+    owner 'root'
+    group 'root'
+    mode '0755'
+    action :create
+  end
+
+  %w(frontends backends).each do |leaf|
+    dir = "#{i[:dotd]}/#{leaf}"
     directory dir do
-      owner 'haproxy'
-      group 'haproxy'
+      owner 'root'
+      group 'root'
+      mode '0755'
+      action :create
+    end
+
+    linkdir = "#{dir}/enabled"
+    directory linkdir do
+      owner 'root'
+      group 'root'
       mode '0755'
       action :create
     end
@@ -37,7 +60,6 @@ action :create do
       pidfile: i[:pidfile]
     )
     action :create
-    notifies :restart, "service[#{i[:svc]}]", :delayed
   end
 
   template i[:cfg] do
@@ -47,35 +69,24 @@ action :create do
     group 'root'
     mode '0644'
     variables(
-      fes: frontends,
-      bes: backends,
       svc: i[:svc],
       pidfile: i[:pidfile],
       chroot: i[:chroot]
     )
     action :create
-    notifies :restart, "service[#{i[:svc]}]", :delayed
-  end
-
-  [{ type: 'frontends', data: frontends }, { type: 'backends', data: backends }].each do |ends|
-    ends[:data].each do |name, theend|
-      template "#{i[:dotd]}/#{ends[:type]}/#{name}.cfg" do
-        cookbook 'ga_haproxy'
-        source "#{ends[:type]}.cfg.erb"
-        owner 'root'
-        group 'root'
-        mode '0644'
-        variables(
-          name: name,
-          theend: theend
-        )
-        action :create
-        notifies :restart, "service[#{i[:svc]}]", :delayed
-      end
-    end
   end
 
   service i[:svc] do
-    action [:enable, :start]
+    action [:enable]
+  end
+
+  notifies_delayed(:restart, resources("ga_haproxy[#{instance_name}]"))
+end
+
+action :restart do
+  i = get_config(instance_name)
+
+  service i[:svc] do
+    action [:restart]
   end
 end
