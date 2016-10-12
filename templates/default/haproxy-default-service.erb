@@ -27,7 +27,7 @@ prog=<%= @svc %>
 cfgfile=<%= @cfg %>
 pidfile=<%= @pidfile %>
 lockfile=/var/lock/subsys/<%= @svc %>
-dotdfiles=$(/bin/find <%= @dotd %> -type f -name '*.cfg' -print0|/bin/sed 's/\([^\x0][^\x0]*\)/-f "\1" /g')
+dotdfiles=$(/bin/find <%= @dotd %> -type f -name '*.cfg' -path '*enabled*' -print0|/bin/sed 's/\([^\x0][^\x0]*\)/-f "\1" /g')
 check() {
     $exec -c -V -f $cfgfile $OPTIONS
 }
