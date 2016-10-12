@@ -5,7 +5,5 @@ backend <%= @name %>
   <% end %>
   <% end %>
   <% @servers.each do |server| %>
-  <% server.each do |s| %>
-  server  <%= s[:name] %>  <%= s[:socket] %> <%= s[:options].join(' ') %>
-  <% end %>
+  server  <%= server[:name] %>  <%= server[:socket] %> <%= server[:options].join(' ') %>
   <% end %>
