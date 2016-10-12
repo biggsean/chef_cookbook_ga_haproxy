@@ -17,7 +17,7 @@ default['haproxy-shared']['default-backend']['servers'] = [
   { name: 'app4', socket: '127.0.0.1:5004', options: ['check'] }
 ]
 
-default['haproxy']['shared']['default-backend']['options'] = [
+default['haproxy-shared']['default-backend']['options'] = [
   'balance roundrobin',
   'option httpchk HEAD / HTTP/1.1\r\nHost:localhost'
 ]
