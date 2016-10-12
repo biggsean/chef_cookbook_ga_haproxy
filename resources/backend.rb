@@ -8,12 +8,9 @@ property :options, Array
 default_action :enable
 
 action :enable do
-  i = get_config(instance_name)
-  cfgdir = "#{i[:dotd]}/backends"
-  config = "#{cfgdir}/#{backend_name}"
-  link = "#{cfgdir}/enabled/#{backend_name}"
+  instance = ResourceConfig.new(instance_name, endtype: :backend, endname: backend_name)
 
-  template config do
+  template instance.becfg do
     cookbook 'ga_haproxy'
     source 'backends.cfg.erb'
     owner 'root'
@@ -27,8 +24,8 @@ action :enable do
     action :create
   end
 
-  link link do
-    to config
+  link instance.belink do
+    to instance.becfg
     link_type :symbolic
     owner 'root'
     group 'root'
@@ -39,11 +36,9 @@ action :enable do
 end
 
 action :disable do
-  i = get_config(instance_name)
-  cfgdir = "#{i[:dotd]}/backends"
-  link = "#{cfgdir}/enabled/#{backend_name}"
+  instance = ResourceConfig.new(instance_name, endtype: :backend, endname: backend_name)
 
-  link link do
+  link instance.belink do
     action :delete
   end
 

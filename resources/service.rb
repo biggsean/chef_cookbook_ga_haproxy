@@ -9,74 +9,58 @@ property :backends, Hash
 default_action :create
 
 action :create do
-  i = get_config(instance_name)
+  instance = ResourceConfig.new(instance_name)
 
-  package package_name do
+  package instance.package_name do
     action :install
   end
 
-  directory i[:chroot] do
+  directory instance.chrootdir do
     owner 'haproxy'
     group 'haproxy'
     mode '0755'
     action :create
   end
 
-  directory i[:dotd] do
-    owner 'root'
-    group 'root'
-    mode '0755'
-    action :create
-  end
-
-  %w(frontends backends).each do |leaf|
-    dir = "#{i[:dotd]}/#{leaf}"
+  instance.config_dirs.each do |dir|
     directory dir do
       owner 'root'
       group 'root'
       mode '0755'
       action :create
     end
-
-    linkdir = "#{dir}/enabled"
-    directory linkdir do
-      owner 'root'
-      group 'root'
-      mode '0755'
-      action :create
-    end
   end
 
-  template i[:init] do
+  template instance.servicefile do
     cookbook 'ga_haproxy'
     source 'haproxy-default-service.erb'
     owner 'root'
     group 'root'
     mode '0755'
     variables(
-      cfg: i[:cfg],
-      dotd: i[:dotd],
-      svc: i[:svc],
-      pidfile: i[:pidfile]
+      cfg: instance.cfg,
+      dotd: instance.dotdir,
+      svc: instance.name,
+      pidfile: instance.pidfile
     )
     action :create
   end
 
-  template i[:cfg] do
+  template instance.cfg do
     cookbook 'ga_haproxy'
     source 'haproxy.cfg.erb'
     owner 'root'
     group 'root'
     mode '0644'
     variables(
-      svc: i[:svc],
-      pidfile: i[:pidfile],
-      chroot: i[:chroot]
+      svc: instance.name,
+      pidfile: instance.pidfile,
+      chroot: instance.chrootdir
     )
     action :create
   end
 
-  service i[:svc] do
+  service instance.name do
     action [:enable]
   end
 
@@ -84,9 +68,9 @@ action :create do
 end
 
 action :restart do
-  i = get_config(instance_name)
+  instance = ResourceConfig.new(instance_name)
 
-  service i[:svc] do
+  service instance.name do
     action [:restart]
   end
 end

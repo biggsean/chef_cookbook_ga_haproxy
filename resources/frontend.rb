@@ -8,12 +8,9 @@ property :default_backend, String
 default_action :enable
 
 action :enable do
-  i = get_config(instance_name)
-  cfgdir = "#{i[:dotd]}/frontends"
-  config = "#{cfgdir}/#{frontend_name}"
-  link = "#{cfgdir}/enabled/#{frontend_name}"
+  instance = ResourceConfig.new(instance_name, endtype: :frontend, endname: frontend_name)
 
-  template config do
+  template instance.fecfg do
     cookbook 'ga_haproxy'
     source 'frontends.cfg.erb'
     owner 'root'
@@ -27,8 +24,8 @@ action :enable do
     action :create
   end
 
-  link link do
-    to config
+  link instance.felink do
+    to instance.fecfg
     link_type :symbolic
     owner 'root'
     group 'root'
@@ -39,11 +36,9 @@ action :enable do
 end
 
 action :disable do
-  i = get_config(instance_name)
-  cfgdir = "#{i[:dotd]}/frontends"
-  link = "#{cfgdir}/enabled/#{frontend_name}"
+  instance = ResourceConfig.new(instance_name, endtype: :frontend, endname: frontend_name)
 
-  link link do
+  link instance.felink do
     action :delete
   end
 
