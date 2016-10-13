@@ -15,7 +15,7 @@ node['haproxy'].each do |instance_name, instance|
     end
   end
 
-  node['haproxy-shared'].each do |be_name, backend|
+  instance['backends'].each do |be_name, backend|
     ga_haproxy_backend be_name do
       instance_name instance_name
       servers backend['servers']
@@ -30,7 +30,7 @@ ga_haproxy_frontend 'https' do
   action :disable
 end
 
-ga_haproxy_backend 'default-backend' do
+ga_haproxy_backend 'https-backend' do
   instance_name 'test'
   action :disable
 end
