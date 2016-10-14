@@ -1,7 +1,7 @@
 Cookbook Name ga_haproxy
 =========
 
-This is a very basic install and configuration of haproxy, supporting multiple instances of haproxy.o
+This is a very basic install and configuration of haproxy, supporting multiple instances of haproxy.
 
 It configures haproxy to load with multiple configuration files.
 * /etc/haproxy/_instance_.cfg          # Global configurations
@@ -13,43 +13,74 @@ Requirements
 
 Tested on chef 12.5.1 and CentOS 6.7
 
+Resources
+---------
+### ga_haproxy
+#### Actions
+* `:create` Create a haproxy service (default)
+* `:restart` Restart the haproxy service
 
-Example
--------
+#### Properties
+* `instance_name` _String_ Name of the service (name property)
+
 ```
-frontends = node['haproxy']['frontends']
-backends = node['haproxy']['backends']
-ga_haproxy 'default' do
-  frontends frontends
-  backends backends
-  action :create
-end
+ga_haproxy 'servicename'
 ```
 
-Attributes
+### ga_haproxy_frontend
+#### Actions
+* `:enable` Enable a frontend for an existing haproxy service (default)
+* `:disable` Disable a frontend for an existing haproxy service
+
+#### Properties
+* `frontend_name` _String_ Name of the frontend (name property)
+* `instance_name` _String_ The instance with which it is associated
+* `socket` _String_ The socket on which to listen
+* `default_backend` _String_ The default_backend haproxy directive.
+
 ```
-default['haproxy']['frontends'] = {
-  main: {
-    ip: '*',
-    port: 80,
-    default_backend: 'google'
+ga_haproxy_frontend 'frontend-foo'
+  instance_name 'servicename'
+  socket '*:80'
+  default_backend 'backend-foo'
+  action :enable
+```
+*OR*
+```
+ga_haproxy_frontend 'frontend-foo'
+  action :disable
+```
+
+### ga_haproxy_backend
+#### Actions
+* `:enable` Enable a backend for an existing haproxy service (default)
+* `:disable` Disable a backend for an existing haproxy service
+
+#### Properties
+* `backend_name` _String_ Name of the backend (name property)
+* `instance_name` _String_ The instance with which it is associated
+* `servers` _Array_ The servers for the backend.
+* `options` _[Array, nil]_ Additional options for the backend. (optional)j
+
+```
+servers = [
+  { 
+    name: 'servername1',
+    socket: '127.0.0.1:5001',
+    options: ['check']
   }
-}
-default['haproxy']['backends'] = {
-  google: {
-    servers: [
-      google1: {
-        socket: 'www.google.com:80',
-        options: ['check']
-      }
-    ],
-    options: [
-      'option  httpchk  HEAD / HTTP/1.1\r\nHost:\ www.google.com',
-      'http-request set-header Host www.google.com',
-      'http-request set-header User-Agent GoogleProxy'
-    ]
-  }
-}
+]
+options = [
+  'balance roundrobin'
+]
+ga_haproxy_backend 'backend-foo'
+  instance_name 'servicename'
+  servers servers
+  options options
+  action :enable
 ```
-
-
+*OR*
+```
+ga_haproxy_backend 'backend-foo'
+  action :disable
+```
