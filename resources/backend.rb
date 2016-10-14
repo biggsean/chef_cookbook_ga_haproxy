@@ -3,7 +3,7 @@ include GAHAProxyCookbook::Helpers
 property :backend_name, String, name_property: true
 property :instance_name, String
 property :servers, Array
-property :options, Array
+property :options, [Array, nil]
 
 default_action :enable
 
